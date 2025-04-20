@@ -1,6 +1,6 @@
 import pandas as pd, re, numpy as np, ace_tools as tools
 
-CSV_PATH = "/mnt/data/todos_juntos.csv"
+CSV_PATH = "todos_juntos.csv"
 try:
     df_all = pd.read_csv(CSV_PATH, header=1, low_memory=False)
 except:
