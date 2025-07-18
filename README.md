@@ -1,51 +1,67 @@
-# Marine Microplastics Review – Classification and Trend Analysis (2016–2024)
+# Marine Microplastics Review – Classification and Trend Analysis
 
-This repository contains the Python scripts used to classify and analyze scientific publications on **marine microplastics** published between **2016 and 2024**. The analysis supports a systematic literature review focused on identifying disciplinary patterns and spatial domains in marine microplastics research.
+This repository contains Python scripts used to classify and analyze scientific publications on **marine microplastics** published untill 2024. The current version is based on data retrieved from **Web of Science (WoS)** and **Scopus**, and supports a systematic review of disciplinary trends, environmental focus, and climate-related approaches in marine microplastics research.
+
+---
+
+## 📚 Overview
+
+Publications were obtained from Web of Science and Scopus using keyword-based queries.
+
+The analysis is structured in two main components:
+
+- **General Classification**: Assigns each article to scientific disciplines (Physics, Chemistry, Biology, Geology), environments (e.g., surface, sediment, estuaries), and climate-related approaches (Diagnosis, Mitigation, Adaptation).
+- **Deep Ocean Subset**: Focuses on publications related to the deep ocean, further categorizing them by ocean basin, maximum sampling depth, and vertical zone (mesopelagic, bathyal, etc.).
 
 ---
 
-## 🔍 Overview
+## 🧰 Repository Structure
 
-Articles were retrieved from the [Dimensions](https://www.dimensions.ai/) database using the search terms:
-
-microplastic* AND marin*
-
-
-Due to export limitations on the Dimensions platform (2,500 records per export), the data were downloaded **year by year** and combined into a single CSV containing **6,870 articles**, each with metadata including:
-
-- Publication ID  
-- DOI  
-- Title  
-- Abstract  
-- Source title  
-- Year of publication  
-- Authors  
-
----
+marine-microplastics-review/
+│
+├── data/ # WoS/Scopus exports and intermediate files
+│ ├── wos_marine_microplastic.txt
+│ └── deep_ocean_records.txt
+│
+├── scripts/
+│ ├── classify_articles.py # General classification script
+│ └── deep_ocean_analysis.py # Specific deep ocean categorization
+│
+├── output/
+│ └── deep_ocean_classified.csv
+│
+├── figures/
+│ ├── discipline_deep_ocean.png
+│ ├── depth_deep_ocean_legend.png
+│ └── ...
+│
+└── README.md
 
 
 ---
 
 ## ⚙️ How to Use
 
-1. **Clone the repository** and install requirements (only pandas and matplotlib):
+1. **Install requirements**
 
 ```bash
-git clone https://github.com/yourusername/marine-microplastics-review.git
-cd marine-microplastics-review
 pip install pandas matplotlib
 
-2. Place your Dimensions CSV export in the data/ folder with the name all_articles_2016_2024.csv.
+2. **Place your WoS/Scopus export files in the data/ folder with the expected names:**
 
-3. Run the classification script:
+    wos_marine_microplastic.txt for the general classification.
+
+    deep_ocean_records.txt for deep ocean articles.
+
+3. **Run the classification scripts**
+
 python scripts/classify_articles.py
+python scripts/deep_ocean_analysis.py
 
-Output will be saved in the output/ folder.
+Output figures and tables will be saved in the figures/ and output/ folders, respectively.
+👥 Authors
 
-👥 Authors and Credits
-
-This repository was developed by Francisco Machín, in support of a review article on marine microplastics research.
-
+This repository was developed by Francisco Machín in support of a systematic literature review on marine microplastics research.
 📄 License
 
 This project is licensed under the MIT License.
