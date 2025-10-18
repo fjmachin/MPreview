@@ -1,6 +1,6 @@
 # Marine Microplastics Review – Classification and Trend Analysis
 
-This repository contains Python scripts used to classify and analyze scientific publications on **marine microplastics** published untill 2024. The current version is based on data retrieved from **Web of Science (WoS)** and **Scopus**, and supports a systematic review of disciplinary trends, environmental focus, and climate-related approaches in marine microplastics research.
+This repository contains Python scripts used to classify and analyze scientific publications on **marine microplastics** published untill 2024. The current version is based on data retrieved from **Web of Science (WoS)**, and supports a systematic review of disciplinary trends, environmental focus, and climate-related approaches in marine microplastics research.
 
 ---
 
@@ -65,3 +65,30 @@ This repository was developed by Francisco Machín in support of a systematic li
 📄 License
 
 This project is licensed under the MIT License.
+
+---
+
+## 🔍 Data Availability and Reproducibility
+
+The bibliographic dataset analyzed in this study originates from **Web of Science (WoS)** and **Scopus** searches performed in July 2025.  
+Because Web of Science content is subject to license restrictions, the original text exports (including abstracts and detailed metadata) **cannot be redistributed**.  
+
+However, this repository provides:
+- The **classification scripts** (`classify_articles_wos.py`, `deep_ocean_analysis.py`) for full methodological transparency.
+- The **derived datasets**, including  
+  - `classified_articles.csv` (internal working file, not redistributed publicly)  
+  - `doi_list_classified.csv` (public dataset listing DOIs, publication years, and classification tags by discipline, environment, and climate approach)  
+
+These files allow the complete reconstruction of the dataset by any user with institutional access to Web of Science or Scopus.
+
+For records without DOIs, additional bibliographic metadata (journal, volume, issue, and pages) are included to ensure traceability without reproducing copyrighted content.
+
+---
+
+## 📘 Citation
+
+If you use these data or scripts, please cite:
+
+> Machín F. et al. (2025). *Structural Biases in Marine Microplastics Research: The Underrepresentation of Deep Ocean and Full Water Column Studies.*  
+> **Environmental Research Letters**.  
+> Repository: https://github.com/fjmachin/MPreview
