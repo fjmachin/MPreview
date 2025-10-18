@@ -219,4 +219,21 @@ plt.savefig(os.path.join(fig_dir,'depth_deep_ocean_legend.png'), dpi=300); plt.c
 # Ocean basin
 stacked_area(df, 'Ocean', 'ocean_deep_ocean.png')
 
+# ----------------------------------------------------------
+# Basin summary (for M_map)
+# ----------------------------------------------------------
+basins_summary = []
+basins = sorted(df['Ocean'].unique())
+
+for b in basins:
+    sub = df[df['Ocean'] == b]
+    count_2015 = sub[sub['Year'] <= 2015].shape[0]
+    count_2024 = sub[sub['Year'] <= 2024].shape[0]
+    basins_summary.append({'Basin': b, 'Count_2015': count_2015, 'Count_2024': count_2024})
+
+df_basins = pd.DataFrame(basins_summary)
+out_basin_csv = os.path.join(fig_dir, 'basin_counts.csv')
+df_basins.to_csv(out_basin_csv, index=False)
+print(f'Basin summary saved: {out_basin_csv}')
+
 print('Figures saved in:', fig_dir)

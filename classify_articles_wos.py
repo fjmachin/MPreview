@@ -5,32 +5,49 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # 1) Read and parse WoS tag-based file 'savedrecs.txt'
-savedrecs = r'C:\Users\Usuario\Dropbox\Universidad\Investigacion\MicroPlastic\Review\Datos\WoS\wos_marine_microplastic.txt' 
+savedrecs = r'C:\Users\Usuario\Dropbox\Universidad\Investigacion\MicroPlastic\Review\Datos\WoS\wos_marine_microplastic.txt'
 with open(savedrecs, encoding='utf-8') as f:
     raw = f.read()
 
 records = raw.split('\nER')
-years, texts = [], []
+years, titles, abstracts, ta_texts = [], [], [], []
 
 for rec in records:
-    # 1) Join continuation lines
+    # Join continuation lines
     rec_flat = re.sub(r'\n {2,}', ' ', rec)
 
-    # 2) Extract year
+    # Extract year
     m = re.search(r'\nPY\s+(\d{4})', rec_flat)
     if not (m and int(m.group(1)) <= 2024):
         continue
     year = int(m.group(1))
 
-    # 3) Extract title, abstract, and keywords
-    core = re.findall(r'\n(?:TI|AB|DE|ID)\s+([^\n]+)', rec_flat)
-    if not core:
+    # Extract title and abstract only (keywords not available in this export)
+    t = re.findall(r'\nTI\s+([^\n]+)', rec_flat)
+    a = re.findall(r'\nAB\s+([^\n]+)', rec_flat)
+    title = ' '.join(t).strip().lower()
+    abstract = ' '.join(a).strip().lower()
+
+    if not any([title, abstract]):
         continue
 
-    years.append(year)
-    texts.append(' '.join(core).lower())
+    # Combine title + abstract for analysis
+    ta_text = (title + ' ' + abstract).strip()
 
-df = pd.DataFrame({'year': years, 'text': texts})
+    years.append(year)
+    titles.append(title)
+    abstracts.append(abstract)
+    ta_texts.append(ta_text)
+
+# Build DataFrame
+df = pd.DataFrame({
+    'year': years,
+    'title': titles,
+    'abstract': abstracts,
+    'ta_text': ta_texts
+})
+
+# Range for plots
 years_range = range(df['year'].min(), 2025)
 
 # 2) Keyword dictionaries
@@ -40,7 +57,7 @@ disciplines = {
         "hydrodynam", "current", "circulat", "advection",
         "wave", "tide", "tidal", "turbulenc", "mixing",
         "eddy", "dispersion", "flow", "particle transport",
-        "modeling", "numerical model", "lagrangian", "drifter"
+        "numerical model", "lagrangian", "drifter"
     ],
     'Chemistry': [
         "chem", "geochem", "aqueous chemistry",
@@ -145,9 +162,9 @@ def assign_flags(texts, category_dict):
         flags[cat] = [bool(regex.search(t)) for t in texts]
     return flags
 
-flags_disc = assign_flags(df['text'], disciplines)
-flags_env = assign_flags(df['text'], environments)
-flags_cli = assign_flags(df['text'], climate)
+flags_disc = assign_flags(df['ta_text'], disciplines)
+flags_env = assign_flags(df['ta_text'], environments)
+flags_cli = assign_flags(df['ta_text'], climate)
 
 # 4) Yearly counts and percentages
 def count_by_year(df, flags, years_range):
@@ -196,6 +213,109 @@ def plot_category(counts, pct, title):
     plt.grid(True, ls='--', alpha=0.5)
     plt.savefig(os.path.join(figdir, f'{fname}_fraction.png'), bbox_inches='tight')
     plt.show()
+
+# === 6) Save per-record classification for verification ===
+outdir = r'C:\Users\Usuario\Dropbox\Universidad\Investigacion\MicroPlastic\Review\Datos\WoS\clasificados'
+os.makedirs(outdir, exist_ok=True)
+
+df_out = pd.concat([df, flags_disc, flags_env, flags_cli], axis=1)
+out_csv = os.path.join(outdir, 'classified_articles.csv')
+df_out.to_csv(out_csv, index=False, encoding='utf-8')
+print(f'Saved full classification table to: {out_csv}')
+
+# === 6b) Generate public DOI list (safe to share) ===
+# Extract DOI from WoS text (if available)
+import re
+
+# Intentamos extraer DOI desde el campo 'ta_text' o 'title' (en caso de que no esté ya presente)
+# En este export de WoS el DOI no se guardó, así que lo volveremos a leer del archivo original
+doi_list = []
+for rec in records:
+    m_doi = re.search(r'\nDI\s+([^\n]+)', rec)
+    doi_list.append(m_doi.group(1).strip() if m_doi else "")
+
+# Igualar longitud (por si se filtraron años en el DataFrame)
+n_df = len(df_out)
+if len(doi_list) > n_df:
+    doi_list = doi_list[:n_df]
+elif len(doi_list) < n_df:
+    doi_list += [""] * (n_df - len(doi_list))
+
+df_out["doi"] = doi_list
+
+# Seleccionar solo columnas seguras
+cols_public = ["doi", "year"] + list(flags_disc.columns) + list(flags_env.columns) + list(flags_cli.columns)
+df_public = df_out[cols_public].copy()
+
+# --- Try to extract basic bibliographic fields (safe metadata) ---
+sources, volumes, issues, pages = [], [], [], []
+
+for rec in records:
+    m_source = re.search(r'\nSO\s+([^\n]+)', rec)
+    m_vol = re.search(r'\nVL\s+([^\n]+)', rec)
+    m_issue = re.search(r'\nIS\s+([^\n]+)', rec)
+    m_page = re.search(r'\nBP\s+([^\n]+)', rec)
+
+    src = m_source.group(1).strip() if m_source else ""
+    vol = m_vol.group(1).strip() if m_vol else ""
+    iss = m_issue.group(1).strip() if m_issue else ""
+    pag = m_page.group(1).strip() if m_page else ""
+
+    pages.append(pag)
+    sources.append(src)
+    volumes.append(vol)
+    issues.append(iss)
+
+# --- Ensure equal length of bibliographic lists and dataframe ---
+n_pub = len(df_public)
+
+def fix_length(lst, n):
+    if len(lst) > n:
+        return lst[:n]
+    elif len(lst) < n:
+        return lst + [""] * (n - len(lst))
+    return lst
+
+sources = fix_length(sources, n_pub)
+volumes = fix_length(volumes, n_pub)
+issues  = fix_length(issues,  n_pub)
+pages   = fix_length(pages,   n_pub)
+
+# Añadir al dataframe
+df_public["journal"] = sources
+df_public["volume"] = volumes
+df_public["issue"] = issues
+df_public["pages"] = pages
+
+# --- Remove entries with no identifiable metadata ---
+mask_identifiable = (
+    df_public['doi'].astype(bool)
+    | df_public['journal'].astype(bool)
+    | df_public['volume'].astype(bool)
+    | df_public['pages'].astype(bool)
+)
+df_public = df_public[mask_identifiable].reset_index(drop=True)
+
+doi_csv = os.path.join(outdir, 'doi_list_classified.csv')
+df_public.to_csv(doi_csv, index=False, encoding='utf-8')
+print(f"Saved DOI-based public summary to: {doi_csv}")
+print(f"Total DOIs extracted: {df_public['doi'].astype(bool).sum()}")
+
+
+# === 7) Print total number of articles per category ===
+print("\n=== TOTAL ARTICLES PER CATEGORY ===")
+
+def print_totals(label, flags):
+    print(f"\n{label}:")
+    totals = flags.sum().sort_values(ascending=False)
+    for cat, n in totals.items():
+        print(f"  {cat:25s} {n:6d}")
+    print(f"  {'Total (non-unique)':25s} {totals.sum():6d}")
+
+print_totals('Discipline', flags_disc)
+print_totals('Environment', flags_env)
+print_totals('Climate approach', flags_cli)
+
 
 # Run plots
 plot_category(c_disc, p_disc, 'Discipline')
