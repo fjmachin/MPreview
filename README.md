@@ -72,7 +72,7 @@ This project is licensed under the MIT License.
 
 ## 🔍 Data Availability and Reproducibility
 
-The bibliographic dataset analyzed in this study originates from **Web of Science (WoS)** and **Scopus** searches performed in July 2025.  
+The bibliographic dataset analyzed in this study originates from **Web of Science (WoS)** searches performed in July 2025.  
 Because Web of Science content is subject to license restrictions, the original text exports (including abstracts and detailed metadata) **cannot be redistributed**.  
 
 However, this repository provides:

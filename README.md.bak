@@ -17,28 +17,30 @@ The analysis is structured in two main components:
 
 ## 🧰 Repository Structure
 
-marine-microplastics-review/
-│
-├── data/ # WoS/Scopus exports and intermediate files
-│ ├── wos_marine_microplastic.txt
-│ └── deep_ocean_records.txt
-│
-├── scripts/
-│ ├── classify_articles.py # General classification script
-│ └── deep_ocean_analysis.py # Specific deep ocean categorization
-│
-├── output/
-│ └── deep_ocean_classified.csv
-│
-├── figures/
-│ ├── discipline_deep_ocean.png
-│ ├── depth_deep_ocean_legend.png
-│ └── ...
-│
-└── README.md
+This repository contains the core scripts and datasets used in the bibliometric analysis:
 
+MPreview/
+│
+├── classify_articles_wos.py # Main script to parse WoS export and classify articles
+├── deep_ocean_analysis.py # Script for deep-ocean subset analysis and figure generation
+├── doi_list_classified.csv # Public dataset: DOIs, year, and classification flags
+├── LICENSE # License file (MIT)
+├── README.md # Project documentation
+└── README.md.bak # Backup of previous README version
 
----
+Each script is self-contained and fully documented to ensure reproducibility.  
+All figures and tables presented in the manuscript can be generated directly from these scripts and the data provided.
+
+### 🗂️ File Summary
+
+| File | Description |
+|------|-------------|
+| `classify_articles_wos.py` | Parses Web of Science export files, extracts metadata (year, DOI, journal, etc.), and classifies articles by discipline, environment, and climate-inspired approach. |
+| `deep_ocean_analysis.py` | Performs secondary analysis on the classified dataset, generates summary tables and visualizations (e.g., Figures 9–11). |
+| `doi_list_classified.csv` | Public dataset listing DOIs, publication years, bibliographic metadata, and classification flags (discipline, environment, and climate approach). |
+| `LICENSE` | Open-source license (MIT). |
+| `README.md` | Project documentation. |
+| `README.md.bak` | Backup of a previous version of the README. |
 
 ## ⚙️ How to Use
 
