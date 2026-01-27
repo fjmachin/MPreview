@@ -91,6 +91,6 @@ For records without DOIs, additional bibliographic metadata (journal, volume, is
 
 If you use these data or scripts, please cite:
 
-> Machín F. et al. (2025). *Structural Biases in Marine Microplastics Research: The Underrepresentation of Deep Ocean and Full Water Column Studies.*  
-> **Environmental Research Letters**.  
+> Machín F. et al. (2026). *Structural Biases in Marine Microplastics Research: The Underrepresentation of Deep Ocean and Full Water Column Studies.*  
+> **Environmental Research Letters**, 21 023003. https://doi.org/10.1088/1748-9326/ae3849 
 > Repository: https://github.com/fjmachin/MPreview
